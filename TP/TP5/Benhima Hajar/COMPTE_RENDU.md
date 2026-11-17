@@ -1,6 +1,6 @@
 # Compte rendu · TP5 : suivre les entraînements (MLflow) et versionner les données (DVC)
 
-**Groupe :** …  ·  **Membres :** Benhima Hajar  ·  **Date :** 17/11/2026
+**Groupe :** 22  ·  **Membres :** Benhima Hajar  ·  **Date :** 17/11/2026 6:01PM
 
 ---
 
@@ -56,6 +56,19 @@ Vos runs (au moins quatre), relevés dans `mlflow ui` (mode « Model training »
 Quel run choisiriez-vous pour MaintAI, et pourquoi ? (Rappel : une panne manquée coûte plus cher qu'une fausse alerte.)
 
 La régression logistique avec le seuil 0.2 : c'est elle qui a le meilleur recall (0.838), donc elle rate le moins de pannes. On accepte en échange plus de fausses alertes. La forêt n'est pas meilleure : au même seuil, elle a un recall un peu plus bas et une precision plus basse.
+
+### GridSearch (ajout demandé)
+
+J'ai ajouté l'option `--grid` à `maintai/train.py`. Elle utilise `GridSearchCV` (validation croisée, 5 plis) pour essayer plusieurs réglages et garder celui qui a le meilleur recall au seuil choisi. Le meilleur réglage et `cv_recall` sont enregistrés dans MLflow. Un test a été ajouté : `33 passed`.
+
+Réglages essayés : logreg `C` = 0.01, 0.1, 1.0, 10.0 ; forêt `n_estimators` = 100, 200 et `max_depth` = None, 5, 10.
+
+| Commande | meilleur réglage | cv_recall | recall | precision | accuracy |
+|---|---|---|---|---|---|
+| `python -m maintai.train --grid --threshold 0.2` | C = 0.01 | 0.839 | 0.838 | 0.528 | 0.876 |
+| `python -m maintai.train --grid --model forest --threshold 0.2` | n_estimators = 100, max_depth = None | 0.795 | 0.816 | 0.470 | 0.850 |
+
+Résultat : la GridSearch ne trouve pas mieux. La logreg avec C = 0.01 a le même recall (0.838) que C = 1.0, mais une precision plus basse. Je garde donc la logreg C = 1.0, seuil 0.2. La forêt reste moins bonne.
 
 Dans `mlflow ui`, ouvrez le modèle d'un run. Quelle version de scikit-learn est indiquée dans son `requirements.txt` ? Quel problème du TP4 cela règle-t-il ?
 
@@ -118,7 +131,7 @@ Entraînez un modèle sur la v2. Dans `mlflow ui`, comparez ce run à celui de l
 
 Peut-on dire que le modèle v2 est « meilleur » ? Pourquoi faut-il être prudent en comparant deux runs entraînés sur des données différentes ?
 
-Non. Les données de test ne sont pas les mêmes (autre taille, autre graine), donc les scores ne se comparent pas directement. Pour comparer deux modèles, il faut les tester sur les mêmes données.
+Non. Les données de test ne sont pas les mêmes, donc les scores ne se comparent pas directement. Pour comparer deux modèles, il faut les tester sur les mêmes données.
 
 ## 5. Décision : l'ADR 004
 
