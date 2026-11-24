@@ -1,0 +1,26 @@
+# Ce qui n'entre jamais dans l'image : lourd, local ou secret.
+# Une ligne par fichier ou dossier ; un dossier se termine par /
+
+# Fichiers locaux et caches : inutiles dans l'image
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.git/
+dist/
+build/
+*.egg-info/
+tests/
+
+# Données et modèle : ils changent sans nouveau code, donc ils arrivent au lancement par un volume (-v)
+data/
+models/
+
+# Le secret (clé API) : il arrive par --env-file .env.
+# Dans l'image, n'importe qui pourrait le lire.
+.env
+
+# MLflow et DVC : servent à entraîner, pas à prédire
+mlflow.db
+mlruns/
+.dvc/

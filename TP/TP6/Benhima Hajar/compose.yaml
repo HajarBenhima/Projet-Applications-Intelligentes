@@ -1,0 +1,28 @@
+# MaintAI en deux conteneurs : l'API et l'interface Streamlit.
+# Lancer : docker compose up --build      Arrêter : docker compose down
+
+
+services:
+  # Service 1 : l'API FastAPI
+  api:
+    build: .                           
+    image: maintai:0.4.0               # le nom de l'image construite
+    env_file: .env                     
+    ports:
+      - "8000:8000"                    # port du conteneur
+    volumes:
+      - ./models:/app/models:ro        # (ro = lecture seule)
+
+  # Service 2 : l'interface Streamlit
+  ui:
+    image: maintai:0.4.0               # la même image que l'API
+    command: ["python", "-m", "streamlit", "run", "ui/app.py",
+              "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true"]
+    environment:
+      MAINTAI_API_URL: http://api:8000
+    ports:
+      - "8501:8501"                    # l'interface s'ouvre sur http://localhost:8501
+    volumes:
+      - ./data:/app/data:ro            
+    depends_on:
+      - api                            # démarre l'API avant l'interface
