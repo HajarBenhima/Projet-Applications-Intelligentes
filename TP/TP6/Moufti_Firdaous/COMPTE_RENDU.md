@@ -1,6 +1,6 @@
 # Compte rendu · TP6 : conteneuriser MaintAI
 
-**Groupe :** …  ·  **Membres :** …  ·  **Date :** 24/11/2026
+**Groupe :** 5IADA G2  ·  **Membres :Firdaous Moufti  ·  **Date :** 24/11/2026
 
 ## 1. Mise en place
 Sortie de `docker run hello-world` (première ligne) et de `docker version` (lignes Client et Server) :
